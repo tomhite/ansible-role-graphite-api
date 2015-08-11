@@ -1,5 +1,8 @@
 ---
+- include: build-graphite-api.yml
+  when: graphite_api_build_enabled
+  tags: [build-graphite-api]
 
-- include: graphite-api.yml
+- include: run-graphite-api.yml
   when: graphite_api_enabled
-  tags: [graphite-api]
+  tags: [run-graphite-api]

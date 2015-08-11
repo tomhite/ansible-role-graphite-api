@@ -1,0 +1,40 @@
+# This tasks builds a new graphite-api docker image on the target. It
+# will likely be removed when the supercna docker repository is implemented
+- name: Make dockerfile build directory
+  file: path={{ graphite_api_container_build_dir }} state=directory
+
+- name: Create Dockerfile 
+  template:
+    src: "{{ graphite_api_dockerfile_path }}/Dockerfile" 
+    dest: "{{ graphite_api_container_build_dir }}/Dockerfile"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create start.sh 
+  template:
+    src:  "{{ graphite_api_dockerfile_path }}/start.sh" 
+    dest: "{{ graphite_api_container_build_dir }}/start.sh"
+    owner: root
+    group: root
+    mode: 0744
+
+# This is required to run the ansible docker module
+- name: Install Docker PY
+  pip: name=docker-py==1.1.0
+
+- name: Remove previous graphite-api container
+  docker:
+    image: "{{ graphite_api_image_name }}"
+    state: absent
+
+- name: Remove previous docker image
+  docker_image:
+    name="{{ graphite_api_image_name }}"
+    state=absent
+
+- name: Build docker image 
+  docker_image:
+    path="{{ graphite_api_container_build_dir }}"
+    name="{{ graphite_api_image_name }}"
+    state=build

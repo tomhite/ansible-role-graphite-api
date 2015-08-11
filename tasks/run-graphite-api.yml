@@ -1,0 +1,12 @@
+# This is required to run the ansible docker module
+- name: Install Docker PY
+  pip: name=docker-py==1.1.0
+
+- name: Start graphite-api container
+  docker:
+    name: graphite-api
+    image: "{{ graphite_api_image_name }}" 
+    ports:
+      - "{{ graphite_api_gunicorn_port }}:8000"
+      - "{{ graphite_api_carbon_udp_port }}:2003"
+    state: reloaded
